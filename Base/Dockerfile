@@ -49,7 +49,7 @@ WORKDIR /root/torch-rnn
 
 #now we start the actual work
 
-wget -O trainfile.txt TRAINFILE_LINK
+wget -O trainfile.txt "https://raw.githubusercontent.com/aggendo/docker-torch-rnn/master/trainFile.txt"
 
 RUN python scripts/preprocess.py \
     --input_txt trainfile.txt --output_h5 trainy.h5 --output_json trainy.json
