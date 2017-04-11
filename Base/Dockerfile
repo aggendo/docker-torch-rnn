@@ -13,7 +13,8 @@ RUN apt-get -y install \
     python-pip \
     git \
     libhdf5-dev \
-    software-properties-common
+    software-properties-common \
+    wget
 
 # Torch and luarocks
 RUN git clone https://github.com/torch/distro.git /root/torch --recursive && cd /root/torch && \
@@ -45,3 +46,17 @@ RUN luarocks make hdf5-0-0.rockspec
 
 #Done!
 WORKDIR /root/torch-rnn
+
+#now we start the actual work
+
+wget -O trainfile.txt TRAINFILE_LINK
+
+RUN python scripts/preprocess.py \
+    --input_txt trainfile.txt --output_h5 trainy.h5 --output_json trainy.json
+
+RUN th train.lua \
+    --input_h5 trainy.h5 \
+    --input_json trainy.json \
+    --gpu -1 -rnn_size $RNN_SIZE -num_layers $NUM_LAYERS -max_epocks $MAX_EPOCHS -print_every 100 \
+    --seq_length $SEQ_LENGTH
+    --batch_size $BATCH_SIZE
